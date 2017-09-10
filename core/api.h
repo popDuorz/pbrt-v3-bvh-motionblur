@@ -40,7 +40,7 @@
 
 // core/api.h*
 #include "pbrt.h"
-
+#include <time.h>
 namespace pbrt {
 
 // API Function Declarations

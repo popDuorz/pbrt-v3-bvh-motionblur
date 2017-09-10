@@ -630,12 +630,15 @@ std::shared_ptr<AreaLight> MakeAreaLight(const std::string &name,
 }
 
 std::shared_ptr<Primitive> MakeAccelerator(
-    const std::string &name,
-    const std::vector<std::shared_ptr<Primitive>> &prims,
-    const ParamSet &paramSet) {
-    std::shared_ptr<Primitive> accel;
-    if (name == "bvh")
-        accel = CreateBVHAccelerator(prims, paramSet);
+	const std::string &name,
+	const std::vector<std::shared_ptr<Primitive>> &prims,
+	const ParamSet &paramSet) {
+	std::shared_ptr<Primitive> accel;
+	if (name == "bvh") {
+		
+		accel = CreateBVHAccelerator(prims, paramSet);
+
+	}
     else if (name == "kdtree")
         accel = CreateKdTreeAccelerator(prims, paramSet);
     else
@@ -1385,8 +1388,17 @@ void pbrtWorldEnd() {
         CHECK_EQ(CurrentProfilerState(), ProfToBits(Prof::SceneConstruction));
         ProfilerState = ProfToBits(Prof::IntegratorRender);
 
-        if (scene && integrator) integrator->Render(*scene);
+		//add by popduorz
+		clock_t start, end;
+		start = clock();
+		
+		if (scene && integrator) {
+			integrator->Render(*scene);
 
+			//add by popduorz
+			end = clock();
+			std::cout << "Building time is: " << double(end - start) / clock_t(1000) << std::endl;
+		}
         MergeWorkerThreadStats();
         ReportThreadStats();
         if (!PbrtOptions.quiet) {
@@ -1414,10 +1426,20 @@ void pbrtWorldEnd() {
 }
 
 Scene *RenderOptions::MakeScene() {
+
+	//add by popduorz
+	clock_t start, end;
+	start = clock();
+	
     std::shared_ptr<Primitive> accelerator =
         MakeAccelerator(AcceleratorName, primitives, AcceleratorParams);
     if (!accelerator) accelerator = std::make_shared<BVHAccel>(primitives);
     Scene *scene = new Scene(accelerator, lights);
+
+	//add by popduorz
+	end = clock();
+	std::cout << "Building time is: " << double(end - start) / clock_t(1000) << std::endl;
+
     // Erase primitives and lights from _RenderOptions_
     primitives.erase(primitives.begin(), primitives.end());
     lights.erase(lights.begin(), lights.end());

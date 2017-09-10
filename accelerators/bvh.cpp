@@ -302,11 +302,13 @@ BVHBuildNode *BVHAccel::recursiveBuild(
 
     int nPrimitives = end - start;
 
-    if (nPrimitives == 1) {
+    if (nPrimitives == 8) {
         // Create leaf _BVHBuildNode_
-        int firstPrimOffset = orderedPrims.size();
-        int primNum = primitiveInfo[start].primitiveNumber;
-        orderedPrims.push_back(primitives[primNum]);
+		int firstPrimOffset = orderedPrims.size();
+		for (int i = start; i < end; ++i) {
+			int primNum = primitiveInfo[i].primitiveNumber;
+			orderedPrims.push_back(primitives[primNum]);
+		}
         node->InitLeaf(firstPrimOffset, nPrimitives, 
 					   bounds0, bounds1);
         return node;
